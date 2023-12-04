@@ -36,12 +36,17 @@ public class ChapterService {
             while ((line = reader.readLine()) != null) {
                 int startHashes = getStartHashes(line);
                 if (startHashes == 0) {
+                    String trimLine = line.trim();
                     if (isFirstLine) {
-                        rootChapter.setTitle(line);
+                        if (!trimLine.isEmpty()) {
+                            rootChapter.setTitle(trimLine);
+                        }
                         isFirstLine = false;
                         continue;
                     }
-                    contentLines.add(line);
+                    if (!trimLine.isEmpty()) {
+                        contentLines.add(trimLine);
+                    }
                     continue;
                 }
 
@@ -56,9 +61,11 @@ public class ChapterService {
                 for (int i = 0; i < startHashes - 1; i++) {
                     parent = parent.createOrGetLastChild();
                 }
-                String title = line.substring(startHashes);
+                String title = line.substring(startHashes).trim();
                 workingChapter = new Chapter();
-                workingChapter.setTitle(title);
+                if (!title.isEmpty()) {
+                    workingChapter.setTitle(title);
+                }
                 parent.addChild(workingChapter);
             }
 

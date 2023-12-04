@@ -158,6 +158,34 @@ public class ChapterServiceTest {
     }
 
     /**
+     * Tests parsing of chapter title and content with spaces at the beginning and end
+     */
+    @Test
+    public void trimText() throws ChapterParsingException {
+        InputStreamSource isSource = textAsInputStreamSource("""
+                   title
+                \s
+                 a
+                  b""");
+        Chapter rootChapter = chapterService.parseChapters(isSource);
+        Assertions.assertEquals("title", rootChapter.getTitle());
+        Assertions.assertEquals("a\nb", rootChapter.getContent());
+        Assertions.assertTrue(rootChapter.getChildren().isEmpty());
+    }
+
+    /**
+     * Tests parsing of several \n symbols
+     */
+    @Test
+    public void emptyLines() throws ChapterParsingException {
+        InputStreamSource isSource = textAsInputStreamSource("\n\n\n\n\n");
+        Chapter rootChapter = chapterService.parseChapters(isSource);
+        Assertions.assertNull(rootChapter.getTitle());
+        Assertions.assertNull(rootChapter.getContent());
+        Assertions.assertTrue(rootChapter.getChildren().isEmpty());
+    }
+
+    /**
      * Returns interface that can open {@link InputStream} for the resource file.
      * @param path String path relative to test/resources/ folder
      * @return {@link InputStreamSource}
